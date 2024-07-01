@@ -1,0 +1,52 @@
+{
+  "filters": {
+    "title": "filtros",
+    "positions": "Posições",
+    "positionList": {
+      "ATA": "ATA",
+      "PE": "PE",
+      "PD": "PD",
+      "MEI": "MEI",
+      "VOL": "VOL",
+      "LE": "LE",
+      "LD": "LD",
+      "ZAG": "ZAG",
+      "GOL": "GOL"
+    },
+    "dateSelection": "Data das seletivas",
+    "pending": "Ações pendentes",
+    "age": "Idade",
+    "nationality": "Nacionalidade",
+    "selectNationality": "Selecione nacionalidade",
+    "level": "Mostrar apenas atletas nível pool"
+  },
+  "selections": {
+    "path": "SELETIVAS",
+    "active": "ACTIVE SELECTIVES",
+    "programmed": "SELETIVAS PROGRAMADAS",
+    "historical": "HISTÓRICO DE SELETIVAS"
+  },
+  "athletes": {
+    "path": "SELETIVAS",
+    "seeDetails": "VER DETALHES",
+    "advised": "ATLETAS INDICADOS",
+    "registered": "ATLETAS INSCRITOS",
+    "dismissed": "ATLETAS REPROVADOS",
+    "and": "à"
+  },
+  "header": {
+    "search": "Digite o que você está buscando"
+  },
+  "login": {
+    "title1": "O RECRUTAMENTO",
+    "title2": "FINALMENTE FICOU",
+    "title3": "MAIS FÁCIL.",
+    "subtitle": "SEJA BEM-VINDO(A) AO DS SCOUT",
+    "contactUs": "Entrar em contato",
+    "haveAccount": "Ainda não tem cadastro?",
+    "forgotPassword": "Esqueci minha senha",
+    "subDescription": "Insira suas informações de login",
+    "rememberMe": "Lembrar de mim",
+    "description": "Organize seletivas, gerencie talentos e agende avaliações totalmente online e de forma colaborativa."
+  }
+}

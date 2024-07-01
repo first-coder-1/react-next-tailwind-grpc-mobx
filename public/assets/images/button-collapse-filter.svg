@@ -1,0 +1,13 @@
+<!-- <svg viewBox="0 0 28 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g id="Group 3554">
+        <rect id="Rectangle 3724" rx="4" fill="#FF4A01"/>
+        <path id="Vector 1675" d="M16 9.32141L11 14.5L16 19.6786" stroke="white" stroke-width="1.4"/>
+    </g>
+</svg> -->
+
+<svg width="100%" height="100%" viewBox="0 0 28 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 3554">
+<rect id="Rectangle 3724" width="100%" height="100%" rx="4" fill="#FF4A01"/>
+<path id="Vector 1675" d="M16 9.32141L11 14.5L16 19.6786" stroke="white" stroke-width="1.4"/>
+</g>
+</svg>

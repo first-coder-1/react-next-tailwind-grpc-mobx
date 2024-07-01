@@ -1,0 +1,150 @@
+.dateRange {
+  background: transparent;
+  border-radius: 6px;
+  border: 1px solid #5b5b5b;
+  width: 228px;
+  height: 212px;
+}
+
+.calendar {
+  color: #fff;
+  background: transparent;
+  border-radius: 6px;
+  border: 1px solid #5b5b5b;
+  width: 228px;
+  height: 212px;
+  min-height: unset;
+  padding-top: 0;
+}
+
+.calendar > :first-child {
+  background: #404040;
+  height: 32px !important;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 8px;
+  color: #dbdbdb;
+}
+
+.calendar button {
+  color: #dbdbdb;
+  font-family: "Archivo Expanded";
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.calendar button span {
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 1L0.999999 5.5L5 10" stroke="white" stroke-width="1.2"/></svg>');
+  transform: rotate(90deg);
+  width: 6px;
+  height: 11px;
+  z-index: 99;
+}
+
+.calendar > :nth-child(2) {
+  top: 32px !important;
+}
+
+.calendar [data-testid="month-selector"] {
+  background-color: #333;
+  padding: 0 4px;
+}
+
+.calendar [data-testid="month-selector"] li {
+  margin-top: unset;
+  margin-bottom: 12px;
+}
+
+.calendar > :nth-child(3) {
+  top: 32px !important;
+}
+
+.calendar [data-testid="year-selector"] {
+  background-color: #1d1d1d;
+  padding: 0 4px;
+}
+
+.calendar [data-testid="year-selector-wrapper"]::before {
+  background-image: linear-gradient(
+    to top,
+    #404040,
+    #404040 10%,
+    rgba(245, 245, 245, 0)
+  );
+}
+
+.calendar [data-testid="year-selector-wrapper"]::after {
+  background-image: linear-gradient(
+    to bottom,
+    #404040,
+    #404040 10%,
+    rgba(245, 245, 245, 0)
+  );
+}
+
+.calendar [data-testid="year-selector"] li {
+  margin-top: unset;
+  margin-bottom: 12px;
+}
+
+/* Monday, ... */
+.calendar > :nth-child(4) {
+  padding: 12px 14px 2px;
+  margin-bottom: unset;
+  color: #737373;
+  font-family: "Archivo Expanded";
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.calendar > :nth-child(5) {
+  height: 180px;
+  min-height: unset;
+}
+
+.calendar > :nth-child(5) > [role="rowgroup"] {
+  padding: 4px 16px;
+}
+
+.calendar > :nth-child(5) > [role="rowgroup"] [role="row"] {
+  height: 28px;
+}
+
+/* day cells */
+.calendar > :nth-child(5) > [role="rowgroup"] [role="row"] div {
+  height: 25px;
+  min-height: unset;
+  color: white !important;
+  width: calc(100% / 7 + 2px);
+  margin: 0 -1px;
+  font-size: 12px;
+}
+
+.calendarRangeStartEndClassName {
+  border-radius: 4px !important;
+  z-index: 99;
+  width: calc(100% / 7) !important;
+  margin: 0 !important;
+}
+
+.calendar > :nth-child(5) > [role="rowgroup"] [role="row"] div:hover {
+  border-radius: 4px !important;
+  background-color: var(--cl-color-primary) !important;
+  color: white !important;
+  z-index: 99;
+  width: calc(100% / 7) !important;
+  margin: 0 !important;
+}
+
+.customDaysClassName {
+  color: white;
+  width: 22px;
+  height: 25px;
+}
+
+.calendarRangeBetweenClassName {
+  /* border-left: 6px solid #c2c2c2;
+  margin-left: -6px; */
+}

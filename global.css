@@ -1,0 +1,51 @@
+@font-face {
+  font-family: "Mango Grotesque";
+  src: url("/assets/fonts/MangoGrotesque-SemiBold.otf");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Archivo Expanded";
+  src: url("/assets/fonts/Archivo_Expanded-SemiBold.ttf");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Archivo Expanded";
+  src: url("/assets/fonts/Archivo_Expanded-Bold.ttf");
+  font-weight: 700;
+}
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+body {
+  margin: 0;
+  padding: 0;
+  /* @apply leading-[normal] m-0; */
+}
+
+*,
+::before,
+::after {
+  border-width: 0;
+}
+
+.scroll::-webkit-scrollbar {
+  width: 17px;
+  height: 17px;
+}
+
+.scroll::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+.scroll::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.scroll:hover::-webkit-scrollbar-thumb {
+  background-color: #a4a4a7b8;
+  border-radius: 10px;
+  border: 5px solid rgba(0, 0, 0, 0.01);
+  background-clip: padding-box;
+}

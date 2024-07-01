@@ -1,0 +1,226 @@
+---
+name: Build & Release
+on: [push]
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    env:
+      CACHE_VERSION: '1.0' # Pleease increase this value if you reset caches
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+
+    - name: Get GitHub Access Token using GitHub Apps
+      id: git_token
+      uses: pyar6329/actions-credentials-github-apps@main
+      with:
+        type: org
+        APP_PEM: ${{ secrets.TINY_BOT_PEM }} # This config is saved org: https://github.com/organizations/dreamstock/settings/secrets/actions
+        APP_ID: ${{ secrets.TINY_BOT_APP_ID }} # This config is saved org: https://github.com/organizations/dreamstock/settings/secrets/actions
+
+    - name: Set GitHub token to .npmrc
+      env:
+        TOKEN: ${{ steps.git_token.outputs.app_token }}
+      run: |
+        echo '@dreamstock:registry=https://npm.pkg.github.com' > .npmrc
+        echo "//npm.pkg.github.com/:_authToken=${TOKEN}" >> .npmrc
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache-dependency-path: './package-lock.json'
+
+    - name: Load Cache global node modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: npm-global-${{ hashFiles('**/package-lock.json') }}-${{ env.CACHE_VERSION }}
+        restore-keys: |
+          npm-global-${{ hashFiles('**/package-lock.json') }}-${{ env.CACHE_VERSION }}
+          npm-global-${{ hashFiles('**/package-lock.json') }}-
+          npm-global-
+
+    - name: Load Cache local node modules
+      id: cache-npm
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: npm-local-${{ hashFiles('**/package-lock.json') }}-${{ env.CACHE_VERSION }}
+        restore-keys: |
+          npm-local-${{ hashFiles('**/package-lock.json') }}-${{ env.CACHE_VERSION }}
+          npm-local-${{ hashFiles('**/package-lock.json') }}-
+          npm-local-
+
+    - name: Download libraries
+      if: steps.cache-npm.outputs.cache-hit != 'true'
+      run: npm install
+
+    - name: Get Release tag for Release
+      id: release_tag
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        echo "tag=${GITHUB_REF:10}" >> $GITHUB_OUTPUT
+
+    - name: Get stage env
+      id: deployment_info
+      env:
+        CLOUDFLARE_PAGES_NAME_DEV: dsf-scout-v3-dev
+        CLOUDFLARE_PAGES_NAME_PROD: dsf-scout-v3-prod
+      run: |
+        if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+          export CLOUDFLARE_PAGES_NAME="${CLOUDFLARE_PAGES_NAME_PROD}"
+          export CLOUDFLARE_STAGE="prod"
+          export IMAGE_TAG="${{ steps.release_tag.outputs.tag }}"
+          export ACCESS_URL="https://dsscout.dsfootball.io"
+          export COGNITO_POOL_ID="${{ vars.COGNITO_POOL_ID_PROD }}"
+          export COGNITO_CLIENT_ID="${{ vars.COGNITO_CLIENT_ID_SCOUT_PROD }}"
+          export API_V3_URL="${{ vars.API_V3_URL_PROD }}"
+          export API_V2_URL="${{ vars.API_V2_URL_PROD }}"
+        else
+          export CLOUDFLARE_PAGES_NAME="${CLOUDFLARE_PAGES_NAME_DEV}"
+          export CLOUDFLARE_STAGE="dev"
+          export IMAGE_TAG="${GITHUB_SHA}"
+          export ACCESS_URL="https://dsscout.dsfootball.dev"
+          export COGNITO_POOL_ID="${{ vars.COGNITO_POOL_ID_DEV }}"
+          export COGNITO_CLIENT_ID="${{ vars.COGNITO_CLIENT_ID_SCOUT_DEV }}"
+          export API_V3_URL="${{ vars.API_V3_URL_DEV }}"
+          export API_V2_URL="${{ vars.API_V2_URL_DEV }}"
+        fi
+        echo "stage=${CLOUDFLARE_STAGE}" >> $GITHUB_OUTPUT
+        echo "cloudflare-project-name=${CLOUDFLARE_PAGES_NAME}" >> $GITHUB_OUTPUT
+        echo "image-tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+        echo "access-url=${ACCESS_URL}" >> $GITHUB_OUTPUT
+        echo "cognito-pool-id=${COGNITO_POOL_ID}" >> $GITHUB_OUTPUT
+        echo "cognito-client-id=${COGNITO_CLIENT_ID}" >> $GITHUB_OUTPUT
+        echo "api-v3-url=${API_V3_URL}" >> $GITHUB_OUTPUT
+
+        echo "api-v2-url=${API_V2_URL}" >> $GITHUB_OUTPUT
+
+    - name: Install deployment command
+      run: npm install -g @cloudflare/next-on-pages
+
+    - name: Generate static files
+      env:
+        NEXT_PUBLIC_COGNITO_USER_POOL: ${{ steps.deployment_info.outputs.cognito-pool-id }}
+        NEXT_PUBLIC_COGNITO_APP_CLIENT: ${{ steps.deployment_info.outputs.cognito-client-id }}
+        NEXT_PUBLIC_API_V3_URL: ${{ steps.deployment_info.outputs.api-v3-url }}
+        NEXT_PUBLIC_API_V2_URL: ${{ steps.deployment_info.outputs.api-v2-url }}
+      run: npx @cloudflare/next-on-pages@1
+
+    - name: Notify Starting deployment to Slack # e.g. https://app.slack.com/block-kit-builder
+      uses: slackapi/slack-github-action@v1.24.0
+      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+      env:
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
+      with:
+        payload: |
+          {
+            "attachments": [
+              { "color": "#ECB22E",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "Deploy ${{ github.event.repository.name }} to ${{ steps.deployment_info.outputs.stage }} start :thinking_face:\n• repo name: ${{ github.event.repository.name }} \n• image tag: ${{ steps.deployment_info.outputs.image-tag }}\n• env: ${{ steps.deployment_info.outputs.stage }}"
+                    }
+                  },
+                  {
+                    "type": "context",
+                    "elements": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "Deployed Owner: <https://github.com/${{ github.event.sender.login }}|@${{ github.event.sender.login }}>"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+
+    - name: Publish codes to GitHub Pages
+      continue-on-error: true # it notify to slack when error occurred
+      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') # NOTE: Please change comment this line if you want to deploy other branch
+      id: deploy_to_cloudflare
+      uses: cloudflare/pages-action@v1.5.0
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: ${{ steps.deployment_info.outputs.cloudflare-project-name }}
+        directory: .vercel/output/static
+        branch: main
+        wranglerVersion: '3'
+
+    - name: Notify Failing deployment to Slack
+      uses: slackapi/slack-github-action@v1.24.0
+      if: ${{ steps.deploy_to_cloudflare.outcome == 'failure' }}
+      env:
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
+      with:
+        payload: |
+          {
+            "attachments": [
+              { "color": "#E01E5A",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "Deploy ${{ github.event.repository.name }} to ${{ steps.deployment_info.outputs.stage }} is failed :rage: :anger:\n• repo name: ${{ github.event.repository.name }} \n• image tag: ${{ steps.deployment_info.outputs.image-tag }}\n• env: ${{ steps.deployment_info.outputs.stage }}"
+                    }
+                  },
+                  {
+                    "type": "context",
+                    "elements": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "Deployed Owner: <https://github.com/${{ github.event.sender.login }}|@${{ github.event.sender.login }}>"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+
+    - name: Notify Successful deployment to Slack
+      uses: slackapi/slack-github-action@v1.24.0
+      if: ${{ steps.deploy_to_cloudflare.outcome == 'success' }}
+      env:
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
+      with:
+        payload: |
+          {
+            "attachments": [
+              { "color": "#2EB886",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "Deploy ${{ github.event.repository.name }} to ${{ steps.deployment_info.outputs.stage }} is completed :muscle:\n• repo name: ${{ github.event.repository.name }} \n• image tag: ${{ steps.deployment_info.outputs.image-tag }}\n• env: ${{ steps.deployment_info.outputs.stage }}\n• access URL: ${{ steps.deployment_info.outputs.access-url }}"
+                    }
+                  },
+                  {
+                    "type": "context",
+                    "elements": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "Deployed Owner: <https://github.com/${{ github.event.sender.login }}|@${{ github.event.sender.login }}>"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+
+    - name: Stop GitHub Action when deployment was failed
+      if: ${{ steps.deploy_to_cloudflare.outcome == 'failure' }}
+      run: exit 1

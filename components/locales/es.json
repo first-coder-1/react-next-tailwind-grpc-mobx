@@ -1,0 +1,52 @@
+{
+  "filters": {
+    "title": "filtros",
+    "positions": "Posiciones",
+    "positionList": {
+      "ATA": "DEL",
+      "PE": "EI",
+      "PD": "ED",
+      "MEI": "MCO",
+      "VOL": "VOL",
+      "LE": "LE",
+      "LD": "LD",
+      "ZAG": "ZAG",
+      "GOL": "ARQ"
+    },
+    "dateSelection": "Fecha de las selecciones",
+    "pending": "Acciones pendientes",
+    "age": "Edad",
+    "nationality": "Nacionalidad",
+    "selectNationality": "Selecione nacionalidad",
+    "level": "Mostrar solo atletas de nivel pool"
+  },
+  "selections": {
+    "path": "SELECCIONES",
+    "active": "SELECCIONES ACTIVAS",
+    "programmed": "SELECCIONES PROGRAMADAS",
+    "historical": "HISTÓRICO DE SELECCIONES "
+  },
+  "athletes": {
+    "path": "SELETIVAS",
+    "seeDetails": "VER DETALLES",
+    "advised": "ATLETAS INDICADOS",
+    "registered": "ATLETAS INSCRITOS",
+    "dismissed": "ATLETAS REPROVADOS",
+    "and": "-"
+  },
+  "header": {
+    "search": "Escribe lo que estás buscando"
+  },
+  "login": {
+    "title1": "EL RECLUTAMIENTO",
+    "title2": "FINALMENTE SE HA",
+    "title3": "VUELTOMÁS FÁCIL.",
+    "subtitle": "BIENVENIDO DE NUEVO, MATHEUS.",
+    "contactUs": "Ponerse en contacto",
+    "haveAccount": "¿No tienes un registro?",
+    "forgotPassword": "Olvidé mi contraseña",
+    "subDescription": "Inserte sus datos de inicio de sesión",
+    "rememberMe": "Recordarme",
+    "description": "Organice selecciones, gestione talentos y programe evaluaciones completamente online y de manera colaborativa."
+  }
+}
